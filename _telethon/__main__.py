@@ -4,7 +4,7 @@ import logging
 import importlib
 from pathlib import Path
 from telethon import TelegramClient, events
-from _telethon import app, LOGGER
+from _telethon import app, xub, LOGGER
 from _telethon.modules import *
 
 def load_plugins(plugin_name):
@@ -26,4 +26,7 @@ for name in files:
 
 app.start()
 print("Telethon User Client Started \nPowered By @TheCodents\n(C) 2021 Jayant Kageri")
-app.run_until_disconnected()
+app.run_until_disconnected
+xub.start()
+print("Telethon User Client 2 Started")
+xub.run_until_disconnected()

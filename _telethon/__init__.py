@@ -12,3 +12,4 @@ logging.basicConfig(
 LOGGER = logging.getLogger(__name__)
 StartTime = time.time()
 app = TelegramClient(StringSession(TE_SESSION), api_id=API_ID, api_hash=API_HASH)
+xub = TelegramClient(StringSession(X_SESSION) api_id=API_ID, api_hash=API_HASH)

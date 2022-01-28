@@ -20,17 +20,15 @@ HELP.update(
 
 @app.on_message(filters.command("help", PREFIX) & filters.me)
 async def help(client, message):
-    args = get_arg(message)
-    if not args:
+    if args := get_arg(message):
+        if module_help := CMD_HELP.get(args, False):
+            await message.edit(module_help)
+        else:
+            await message.edit("Invalid module name specified")
+            return
+    else:
         text = "**Available Commands**\n\n"
         for key, value in HELP.items():
             text += f"{key}: {value}\n\n"
         await message.edit(text)
         return
-    else:
-        module_help = CMD_HELP.get(args, False)
-        if not module_help:
-            await message.edit("Invalid module name specified")
-            return
-        else:
-            await message.edit(module_help)

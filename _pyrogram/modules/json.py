@@ -7,15 +7,10 @@ from os import *
 @app.on_message(filters.command("json", PREFIX) & filters.me)
 async def start(client, message):
     try:
-        if message.reply_to_message:
-            msg = message.reply_to_message
-        else:
-            msg = message
-
+        msg = message.reply_to_message or message
         if len(str(msg_info)) > int("4096"):
-            file = open("json.txt", "w+")
-            file.write(str(msg_info))
-            file.close()
+            with open("json.txt", "w+") as file:
+                file.write(str(msg_info))
             await app.send_document(
                 message.chat.id,
                 "json.txt",

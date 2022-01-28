@@ -26,15 +26,12 @@ async def translate(_client, message):
             await edrep(message, text="Usage: Reply to a message, then `tr <lang>`")
             return
         target = message.text.split()[1]
-        if message.reply_to_message.text:
-            text = message.reply_to_message.text
-        else:
-            text = message.reply_to_message.caption
+        text = message.reply_to_message.text or message.reply_to_message.caption
         detectlang = trl.detect(text)
         try:
             tekstr = trl.translate(text, lang_tgt=target)
         except ValueError as err:
-            await edrep(message, text=f"Error: `{str(err)}`")
+            await edrep(message, text=f'Error: `{err}`')
             return
     else:
         if len(message.text.split()) <= 2:

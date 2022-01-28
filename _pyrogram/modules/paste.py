@@ -40,14 +40,10 @@ async def pastebin(_, message):
         m_list = None
         with open(downloaded_file_name_res, "rb") as fd:
             m_list = fd.readlines()
-        downloaded_file_name = ""
-        for m in m_list:
-            downloaded_file_name += m.decode("UTF-8")
+        downloaded_file_name = "".join(m.decode("UTF-8") for m in m_list)
         os.remove(downloaded_file_name_res)
     elif message.reply_to_message:
         downloaded_file_name = message.reply_to_message.text.html
-    # elif len(message.command) > 1:
-    #     downloaded_file_name = " ".join(message.command[1:])
     else:
         await message.edit("Not said What to do")
         return
@@ -66,10 +62,7 @@ async def pastebin(_, message):
         "nekobin": "https://nekobin.com/api/documents"
     }
 
-    chosen_store = "nekobin"
-    if len(message.command) == 2:
-        chosen_store = message.command[1]
-
+    chosen_store = message.command[1] if len(message.command) == 2 else "nekobin"
     # get the required pastebin URI
     paste_store_url = paste_bin_store_s.get(
         chosen_store,

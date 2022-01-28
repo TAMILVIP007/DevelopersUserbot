@@ -39,8 +39,7 @@ CMD_HELP.update(
 
 @app.on_message(filters.command("ban", PREFIX) & filters.me)
 async def ban_hammer(_, message: Message):
-    reply = message.reply_to_message
-    if reply:
+    if reply := message.reply_to_message:
         user = reply.from_user["id"]
     else:
         user = get_arg(message)
@@ -56,8 +55,7 @@ async def ban_hammer(_, message: Message):
 
 @app.on_message(filters.command("unban", PREFIX) & filters.me)
 async def unban(_, message: Message):
-    reply = message.reply_to_message
-    if reply:
+    if reply := message.reply_to_message:
         user = reply.from_user["id"]
     else:
         user = get_arg(message)
@@ -86,8 +84,7 @@ mute_permission = ChatPermissions(
 
 @app.on_message(filters.command("mute", PREFIX) & filters.me)
 async def mute_hammer(_, message: Message):
-    reply = message.reply_to_message
-    if reply:
+    if reply := message.reply_to_message:
         user = reply.from_user["id"]
     else:
         user = get_arg(message)
@@ -116,8 +113,7 @@ unmute_permissions = ChatPermissions(
 
 @app.on_message(filters.command("unmute", PREFIX) & filters.me)
 async def unmute(_, message: Message):
-    reply = message.reply_to_message
-    if reply:
+    if reply := message.reply_to_message:
         user = reply.from_user["id"]
     else:
         user = get_arg(message)
@@ -130,8 +126,7 @@ async def unmute(_, message: Message):
 
 @app.on_message(filters.command("kick", PREFIX) & filters.me)
 async def kick_usr(_, message: Message):
-    reply = message.reply_to_message
-    if reply:
+    if reply := message.reply_to_message:
         user = reply.from_user["id"]
     else:
         user = get_arg(message)
@@ -158,16 +153,11 @@ async def pin_message(_, message: Message):
         if me.id in admin_ids:
             # If you replied to a message so that we can pin it.
             if message.reply_to_message:
-                disable_notification = True
-
-                # Let me see if you want to notify everyone. People are gonna hate you for this...
-                if len(message.command) >= 2 and message.command[1] in [
+                disable_notification = len(message.command) < 2 or message.command[1] not in [
                     "alert",
                     "notify",
                     "loud",
-                ]:
-                    disable_notification = False
-
+                ]
                 # Pin the fucking message.
                 await app.pin_chat_message(
                     message.chat.id,
@@ -198,8 +188,7 @@ async def pin_message(_, message: Message):
 async def promote(client, message: Message):
     try:
         title = "Admin"
-        reply = message.reply_to_message
-        if reply:
+        if reply := message.reply_to_message:
             user = reply.from_user["id"]
             title = str(get_arg(message))
         else:
@@ -225,8 +214,7 @@ async def promote(client, message: Message):
 @app.on_message(filters.command("demote", PREFIX) & filters.me)
 async def demote(client, message: Message):
     try:
-        reply = message.reply_to_message
-        if reply:
+        if reply := message.reply_to_message:
             user = reply.from_user["id"]
         else:
             user = get_arg(message)
@@ -252,8 +240,7 @@ async def demote(client, message: Message):
 
 @app.on_message(filters.command("invite", PREFIX) & filters.me & ~filters.private)
 async def invite(client, message):
-    reply = message.reply_to_message
-    if reply:
+    if reply := message.reply_to_message:
         user = reply.from_user["id"]
     else:
         user = get_arg(message)

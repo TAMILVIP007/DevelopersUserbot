@@ -34,8 +34,6 @@ async def purge_message(client, message):
         if not is_admin:
             await message.delete()
             return
-    else:
-        pass
     start_t = datetime.now()
     await message.delete()
     message_ids = []

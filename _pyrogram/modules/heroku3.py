@@ -32,11 +32,11 @@ requirements_path = path.join(
 
 
 async def gen_chlog(repo, diff):
-    ch_log = ""
     d_form = "On %d/%m/%y at %H:%M:%S"
-    for c in repo.iter_commits(diff):
-        ch_log += f"**#{c.count()}** : {c.committed_datetime.strftime(d_form)} : [{c.summary}]({UPSTREAM_REPO_URL.rstrip('/')}/commit/{c}) by `{c.author}`\n"
-    return ch_log
+    return "".join(
+        f"**#{c.count()}** : {c.committed_datetime.strftime(d_form)} : [{c.summary}]({UPSTREAM_REPO_URL.rstrip('/')}/commit/{c}) by `{c.author}`\n"
+        for c in repo.iter_commits(diff)
+    )
 
 
 async def updateme_requirements():
@@ -59,8 +59,11 @@ async def upstream(client, message):
     conf = get_arg(message)
     off_repo = UPSTREAM_REPO_URL
     try:
-        txt = "`Oops.. Updater cannot continue due to "
-        txt += "some problems occured`\n\n**LOGTRACE:**\n"
+        txt = (
+            "`Oops.. Updater cannot continue due to "
+            + "some problems occured`\n\n**LOGTRACE:**\n"
+        )
+
         repo = Repo()
     except NoSuchPathError as error:
         await status.edit(f"{txt}\n`directory {error} is not found`")
@@ -71,8 +74,6 @@ async def upstream(client, message):
         repo.__del__()
         return
     except InvalidGitRepositoryError as error:
-        if conf != "now":
-            pass
         repo = Repo.init()
         origin = repo.create_remote("upstream", off_repo)
         origin.fetch()
@@ -96,23 +97,21 @@ async def upstream(client, message):
     if "now" not in conf:
         if changelog:
             changelog_str = f"**New UPDATE available for [[{ac_br}]]({UPSTREAM_REPO_URL}/tree/{ac_br}):\n\nCHANGELOG**\n\n{changelog}"
-            if len(changelog_str) > 4096:
-                await status.edit("`Changelog is too big, view the file to see it.`")
-                file = open("output.txt", "w+")
-                file.write(changelog_str)
-                file.close()
-                await app.send_document(
-                    message.chat.id,
-                    "output.txt",
-                    caption=f"Do {PREFIX}`update now` to update.",
-                    reply_to_message_id=status.message_id,
-                )
-                remove("output.txt")
-            else:
+            if len(changelog_str) <= 4096:
                 return await status.edit(
                     f"{changelog_str}\n\nDo `.update now` to update.",
                     disable_web_page_preview=True,
                 )
+            await status.edit("`Changelog is too big, view the file to see it.`")
+            with open("output.txt", "w+") as file:
+                file.write(changelog_str)
+            await app.send_document(
+                message.chat.id,
+                "output.txt",
+                caption=f"Do {PREFIX}`update now` to update.",
+                reply_to_message_id=status.message_id,
+            )
+            remove("output.txt")
         else:
             await status.edit(
                 f"\n`Your BOT is`  **up-to-date**  `with`  **[[{ac_br}]]({UPSTREAM_REPO_URL}/tree/{ac_br})**\n",
@@ -196,14 +195,13 @@ async def log(client, message):
         f_logs = server + "\n\n===================================================================================================================================================\n\n" + log
 
         if len(f_logs) > 4096:
-            file = open("logs.txt", "w+")
-            file.write(f_logs)
-            file.close()
+            with open("logs.txt", "w+") as file:
+                file.write(f_logs)
             await app.send_document(
                 message.chat.id,
                 "logs.txt",
                 caption=f"Logs for {HEROKU_APP_NAME}",
-                
+
             )
             remove("logs.txt")
 

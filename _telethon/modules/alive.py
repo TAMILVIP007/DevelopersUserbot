@@ -17,10 +17,7 @@ def get_readable_time(seconds: int) -> str:
 
     while count < 4:
         count += 1
-        if count < 3:
-            remainder, result = divmod(seconds, 60)
-        else:
-            remainder, result = divmod(seconds, 24)
+        remainder, result = divmod(seconds, 60) if count < 3 else divmod(seconds, 24)
         if seconds == 0 and remainder == 0:
             break
         time_list.append(int(result))
@@ -41,15 +38,16 @@ __python_version__ = f"{sys.version_info[0]}.{sys.version_info[1]}.{sys.version_
 
 @app.on(events.NewMessage(outgoing=True, pattern=f"^{PREFIX}alive (.*)"))
 async def alive_t(event):
-    if "-t" in event.text:
-        pass
-    else:
+    if "-t" not in event.text:
         return
     start = datetime.now()
     end = datetime.now()
     (end - start).microseconds / 1000
     uptime = get_readable_time((time.time() - StartTime))
-    reply_msg = f"**[Developer](https://github.com/TheCodents/DevelopersUserbot)**\n"
+    reply_msg = (
+        '**[Developer](https://github.com/TheCodents/DevelopersUserbot)**\n'
+    )
+
     reply_msg += f"Python Version: `{__python_version__}`\n"
     reply_msg += f"Telethon Version: `{__tele_version__}`\n"
     end_time = time.time()
@@ -58,9 +56,7 @@ async def alive_t(event):
 
 @app.on(events.NewMessage(outgoing=True, pattern=f"^{PREFIX}ping (.*)"))
 async def _(event):
-    if "-t" in event.text:
-        pass
-    else:
+    if "-t" not in event.text:
         return
     app_info = await app.get_me()
     start = datetime.now()
